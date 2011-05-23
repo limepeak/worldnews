@@ -1,0 +1,149 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+    <title>WORLDNEWS</title>
+	<link rel="icon" type="image/png" href="http://www.limepeak.com/cdn/world.png">
+	<link rel="Stylesheet" href="styles.css" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js" type="text/javascript"></script>
+    <script src="jquery.jgfeed-min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+		$(function() {
+			// In no particular order
+			var feedSources = [
+				{ 	'region': 'USA',
+					'key': 'USA',
+					'source': 'CNN',
+					'url': 'http://rss.cnn.com/rss/cnn_us.rss'
+				},
+				{ 	'region': 'UK',
+					'key': 'UK',
+					'source': 'BBC News',
+					'url': 'http://feeds.bbci.co.uk/news/uk/rss.xml'
+				},
+				{ 	'region': 'Ireland',
+					'key': 'Ireland',
+					'source': 'Irish Times',
+					'url': 'http://rss.feedsportal.com/c/851/f/10838/index.rss'
+				},
+				{ 	'region': 'Middle East',
+					'key': 'MiddleEast',
+					'source': 'Al Jazeera',
+					'url': 'http://english.aljazeera.net/Services/Rss/?PostingId=2007731105943979989'
+				},
+				{ 	'region': 'New Zealand',
+					'key': 'NewZealand',
+					'source': 'NZ Herald',
+					'url': 'http://rss.nzherald.co.nz/rss/xml/nzhrsscid_000000001.xml'
+				},
+				{ 	'region': 'India',
+					'key': 'India',
+					'source': 'Times of India',
+					'url': 'http://timesofindia.feedsportal.com/c/33039/f/533916/index.rss'
+				},
+				{ 	'region': 'China',
+					'key': 'China',
+					'source': 'China Post',
+					'url': 'http://www.chinapost.com.tw/rss/china.xml'
+				},
+				{ 	'region': 'France',
+					'key': 'France',
+					'source': 'La Tribune',
+					'url': 'http://www.latribune.fr/rss/rubriques/actualite.html'
+				},
+				{ 	'region': 'Spain',
+					'key': 'Spain',
+					'source': 'El País',
+					'url': 'http://www.elpais.com/rss/feed.html?feedId=1002'
+				},
+				{ 	'region': 'Germany',
+					'key': 'Germany',
+					'source': 'Bild.de',
+					'url': 'http://rss.bild.de/bild.xml'
+				},
+				{ 	'region': 'Korea',
+					'key': 'Korea',
+					'source': 'The Korea Herald',
+					'url': 'http://biz.heraldm.com/rss/010000000000.xml'
+				},
+				
+				{ 	'region': 'Japan',
+					'key': 'Japan',
+					'source': 'Japan Times',
+					'url': 'http://feeds.feedburner.com/japantimes'
+				}
+				
+			];
+
+			
+				for (var i = 0, len = feedSources.length; i < len; i++)
+				{
+					var template = '<li>';
+					template += '<h2>{region}</h2>';
+					template += '<ul id="{key}" class="links">';
+					template += '<li><em>Loading...</em></li>';
+					template += '</ul>';
+					template += '</li>';
+					
+					var ul = document.createElement('ul');
+					ul.innerHTML = template.replace(/{region}/g, feedSources[i].region).replace(/{key}/g, feedSources[i].key);
+					
+					$('#newsRegions').append(ul);
+					
+					// 4 column layout
+					if((i + 1) % 4 == 0)
+					{
+						var divBreak = document.createElement('div');
+						divBreak.className = 'divBreak';
+						$('#newsRegions').append(divBreak);
+					}
+					
+					var renderMethod = function()
+					{
+						var index = i;
+						
+						return function() {
+							var feedSource = feedSources[index];
+							var feeds = arguments[0];
+
+							// Check for errors
+							if (!feeds)
+							{
+								// there was an error
+								return false;
+							}
+
+							// do whatever you want with feeds here
+							var regionElement = $('#' + feedSource.key);
+							regionElement.empty();
+								
+							for (var j = 0; j < feeds.entries.length; j++)
+							{
+								var entry = feeds.entries[j];
+
+								var link = document.createElement('a');
+								link.href = entry.link;
+								link.innerHTML = entry.title;
+								link.title = entry.content;
+
+								var li = document.createElement('li');
+								li.appendChild(link);
+								
+								regionElement.append(li);
+							}
+						};
+					};
+
+
+					
+				   $.jGFeed(feedSources[i].url, renderMethod(), 10);
+				}
+			});
+</script>
+</head>
+<body>
+    <div id="main">
+        <h1>World News</h1>
+		<div id="newsRegions"></div>
+    </div>
+</body>
+</html>
